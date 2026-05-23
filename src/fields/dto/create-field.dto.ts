@@ -1,3 +1,5 @@
+import { Type } from 'class-transformer';
+
 import {
     IsNumber,
     IsOptional,
@@ -8,10 +10,10 @@ export class CreateFieldDto {
     @IsString()
     name!: string;
 
-
     @IsString()
     address!: string;
 
+    @Type(() => Number)
     @IsNumber()
     price!: number;
 
@@ -25,5 +27,4 @@ export class CreateFieldDto {
     @IsOptional()
     @IsString()
     imageUrl?: string;
-
 }
