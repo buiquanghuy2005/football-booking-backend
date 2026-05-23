@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//
+// =====================
+// ENUMS
+// =====================
+//
+
+enum Role {
+  USER
+  OWNER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+//
+// =====================
+// USER
+// =====================
+//
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+
+  // relations
+  fields    Field[]
+  bookings  Booking[]
+
+  createdAt DateTime @default(now())
+}
+
+//
+// =====================
+// FIELD (SÂN BÓNG)
+// =====================
+//
+
+model Field {
+  id          String   @id @default(uuid())
+
+  name        String
+  address     String
+  price       Int
+  description String
+
+  // ⭐ NEW IMAGE
+  imageUrl    String?
+
+  // OWNER RELATION
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id])
+
+  // bookings
+  bookings    Booking[]
+
+  createdAt   DateTime @default(now())
+}
+
+//
+// =====================
+// BOOKING
+// =====================
+//
+
+model Booking {
+  id String @id @default(uuid())
+
+  startTime DateTime
+  endTime   DateTime
+
+  customerName String
+  phoneNumber  String
+
+  status BookingStatus @default(PENDING)
+
+  // USER đặt sân
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  // FIELD được đặt
+  fieldId String
+  field   Field  @relation(fields: [fieldId], references: [id])
+
+  createdAt DateTime @default(now())
+}
