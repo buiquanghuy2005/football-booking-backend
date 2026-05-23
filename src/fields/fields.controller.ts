@@ -24,6 +24,8 @@ import { Roles } from 'src/auth/roles.decorator';
 
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
+import { RolesGuard } from 'src/auth/roles.guard';
+
 @Controller('fields')
 export class FieldsController {
     constructor(
@@ -37,7 +39,10 @@ export class FieldsController {
     }
 
     // 🏟️ OWNER - my fields
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(
+        JwtAuthGuard,
+        RolesGuard,
+    )
     @Roles('OWNER')
     @Get('owner')
     getMyFields(@Request() req) {
@@ -47,7 +52,10 @@ export class FieldsController {
     }
 
     // 🛠️ ADMIN - all fields
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(
+        JwtAuthGuard,
+        RolesGuard,
+    )
     @Roles('ADMIN')
     @Get('admin')
     getAllForAdmin() {
@@ -61,7 +69,10 @@ export class FieldsController {
     }
 
     // 🏟️ OWNER + ADMIN - create field
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(
+        JwtAuthGuard,
+        RolesGuard,
+    )
     @Roles('OWNER', 'ADMIN')
     @Post()
     @UseInterceptors(
@@ -112,7 +123,10 @@ export class FieldsController {
     }
 
     // ✏️ OWNER + ADMIN - update field
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(
+        JwtAuthGuard,
+        RolesGuard,
+    )
     @Roles('OWNER', 'ADMIN')
     @Put(':id')
     @UseInterceptors(
@@ -127,7 +141,6 @@ export class FieldsController {
         let imageUrl =
             dto.imageUrl || '';
 
-        // upload new image
         if (file) {
             const uploaded =
                 await new Promise<any>(
@@ -167,7 +180,10 @@ export class FieldsController {
     }
 
     // 🗑️ OWNER + ADMIN - delete field
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(
+        JwtAuthGuard,
+        RolesGuard,
+    )
     @Roles('OWNER', 'ADMIN')
     @Delete(':id')
     remove(
