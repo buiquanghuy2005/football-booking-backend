@@ -63,7 +63,11 @@ export class AuthService {
                     role,
                 },
             );
-
+        if (!user?.isActive) {
+            throw new UnauthorizedException(
+                'Account has been disabled',
+            );
+        }
         // ❗ remove password
         const {
             password,
@@ -84,7 +88,11 @@ export class AuthService {
                 'Invalid credentials',
             );
         }
-
+        if (!user.isActive) {
+            throw new UnauthorizedException(
+                'Account has been disabled',
+            );
+        }
         const isPasswordValid =
             await bcrypt.compare(
                 dto.password,

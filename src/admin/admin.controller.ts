@@ -1,38 +1,58 @@
 import {
     Controller,
+    Delete,
     Get,
+    Param,
+    Patch,
     UseGuards,
 } from '@nestjs/common';
 
-import { PrismaService } from 'src/prisma/prisma.service';
-
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
 
+import { AdminService } from './admin.service';
+
 @Controller('admin')
+@UseGuards(
+    JwtAuthGuard,
+    RolesGuard,
+)
+@Roles('ADMIN')
 export class AdminController {
     constructor(
-        private prisma: PrismaService,
+        private adminService: AdminService,
     ) { }
 
-    // 🛠️ ADMIN DASHBOARD STATS
-    @UseGuards(JwtAuthGuard)
-    @Roles('ADMIN')
+    // Dashboard
     @Get('stats')
-    async getStats() {
-        const users =
-            await this.prisma.user.count();
+    getStats() {
+        return this.adminService.getStats();
+    }
 
-        const fields =
-            await this.prisma.field.count();
+    // USERS
+    @Get('users')
+    getUsers() {
+        return this.adminService.getUsers();
+    }
 
-        const bookings =
-            await this.prisma.booking.count();
+    @Get('users/:id')
+    getUser(
+        @Param('id') id: string,
+    ) {
+        return this.adminService.getUser(id);
+    }
 
-        return {
-            users,
-            fields,
-            bookings,
-        };
+    @Patch('users/:id/toggle')
+    toggleUser(
+        @Param('id') id: string,
+    ) {
+        return this.adminService.toggleUser(id);
+    }
+
+    // OWNERS
+    @Get('owners')
+    getOwners() {
+        return this.adminService.getOwners();
     }
 }

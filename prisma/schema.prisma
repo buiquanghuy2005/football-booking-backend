@@ -38,7 +38,8 @@ model User {
   password  String
   role      Role     @default(USER)
 
-  // relations
+  isActive  Boolean  @default(true)
+
   fields    Field[]
   bookings  Booking[]
 
