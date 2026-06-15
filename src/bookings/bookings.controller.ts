@@ -54,7 +54,22 @@ export class BookingsController {
             req.user.userId,
         );
     }
-
+    // USER CANCEL BOOKING
+    @UseGuards(
+        JwtAuthGuard,
+        RolesGuard,
+    )
+    @Roles('USER')
+    @Post('my-cancel/:id')
+    cancelMyBooking(
+        @Param('id') id: string,
+        @Req() req: any,
+    ) {
+        return this.bookingsService.cancelMyBooking(
+            id,
+            req.user.userId,
+        );
+    }
     //
     // 🌍 PUBLIC
     //

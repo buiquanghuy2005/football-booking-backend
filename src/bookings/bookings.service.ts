@@ -136,4 +136,47 @@ export class BookingsService {
             },
         });
     }
+    async cancelMyBooking(
+        bookingId: string,
+        userId: string,
+    ) {
+        const booking =
+            await this.prisma.booking.findUnique({
+                where: {
+                    id: bookingId,
+                },
+            });
+
+        if (!booking) {
+            throw new BadRequestException(
+                'Booking not found',
+            );
+        }
+
+        if (booking.userId !== userId) {
+            throw new BadRequestException(
+                'Not your booking',
+            );
+        }
+
+        if (
+            booking.status ===
+            BookingStatus.CANCELLED
+        ) {
+            throw new BadRequestException(
+                'Booking already cancelled',
+            );
+        }
+
+        return this.prisma.booking.update({
+            where: {
+                id: bookingId,
+            },
+
+            data: {
+                status:
+                    BookingStatus.CANCELLED,
+            },
+        });
+    }
 }
